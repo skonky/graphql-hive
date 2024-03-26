@@ -7,7 +7,6 @@ import {
   registerShutdown,
   registerTRPC,
   reportReadiness,
-  SamplingDecision,
   startMetrics,
   TracingInstance,
 } from '@hive/service-common';
@@ -24,17 +23,6 @@ async function main() {
     tracing = configureTracing({
       collectorEndpoint: env.tracing.collectorEndpoint,
       serviceName: 'rate-limit',
-      sampler(ctx, traceId, spanName, spanKind, attributes) {
-        if (attributes['requesting.service'] === 'usage') {
-          return {
-            decision: SamplingDecision.NOT_RECORD,
-          };
-        }
-
-        return {
-          decision: SamplingDecision.RECORD_AND_SAMPLED,
-        };
-      },
     });
 
     tracing.instrumentNodeFetch();
@@ -69,10 +57,7 @@ async function main() {
   try {
     const limiter = createRateLimiter({
       logger: server.log,
-      rateLimitConfig: {
-        interval: env.limitCacheUpdateIntervalMs,
-      },
-      rateEstimator: env.hiveServices.usageEstimator,
+      usageEstimator: env.hiveServices.usageEstimator,
       emails: env.hiveServices.emails ?? undefined,
       storage: {
         connectionString: createConnectionString(env.postgres),

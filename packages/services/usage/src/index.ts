@@ -154,14 +154,7 @@ async function main() {
           status: 'success',
         });
 
-        if (
-          await rateLimit?.isRateLimited({
-            id: tokenInfo.target,
-            type: 'operations-reporting',
-            token,
-            entityType: 'target',
-          })
-        ) {
+        if (await rateLimit?.isRateLimited(tokenInfo.target)) {
           droppedReports
             .labels({ targetId: tokenInfo.target, orgId: tokenInfo.organization })
             .inc();

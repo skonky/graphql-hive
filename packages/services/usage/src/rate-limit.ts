@@ -1,5 +1,5 @@
 import LRU from 'tiny-lru';
-import type { RateLimitApi, RateLimitApiInput, RateLimitApiOutput } from '@hive/rate-limit';
+import type { RateLimitApi, RateLimitApiOutput } from '@hive/rate-limit';
 import { ServiceLogger } from '@hive/service-common';
 import { createTRPCProxyClient, httpLink } from '@trpc/client';
 
@@ -10,7 +10,7 @@ export function createUsageRateLimit(config: { endpoint: string | null; logger: 
     logger.warn(`Usage service is not configured to use rate-limit (missing config)`);
 
     return {
-      async isRateLimited(_input: RateLimitApiInput['checkRateLimit']): Promise<boolean> {
+      async isRateLimited(_targetId: string): Promise<boolean> {
         return false;
       },
     };
@@ -27,23 +27,17 @@ export function createUsageRateLimit(config: { endpoint: string | null; logger: 
       }),
     ],
   });
-  const cache = LRU<Promise<RateLimitApiOutput['checkRateLimit'] | null>>(1000, 30_000);
-  const retentionCache = LRU<Promise<RateLimitApiOutput['getRetention'] | null>>(1000, 30_000);
-
-  async function fetchFreshRetentionInfo(input: RateLimitApiInput['getRetention']) {
-    return rateLimit.getRetention.query(input);
-  }
-
-  async function fetchFreshLimitInfo(input: RateLimitApiInput['checkRateLimit']) {
-    return rateLimit.checkRateLimit.query(input);
-  }
+  const cache = LRU<RateLimitApiOutput['checkRateLimitForTarget']>(1000, 60_000);
+  const retentionCache = LRU<RateLimitApiOutput['getRetention']>(1000, 60_000);
 
   return {
     async getRetentionForTargetId(targetId: string) {
-      const retentionResponse = await retentionCache.get(targetId);
+      const retentionResponse = retentionCache.get(targetId);
 
       if (!retentionResponse) {
-        const result = fetchFreshRetentionInfo({ targetId });
+        const result = await rateLimit.getRetention.query({
+          targetId,
+        });
 
         if (result) {
           retentionCache.set(targetId, result);
@@ -56,16 +50,18 @@ export function createUsageRateLimit(config: { endpoint: string | null; logger: 
 
       return retentionResponse;
     },
-    async isRateLimited(input: RateLimitApiInput['checkRateLimit']): Promise<boolean> {
-      const limitInfo = await cache.get(input.id);
+    async isRateLimited(targetId: string): Promise<boolean> {
+      const limitInfo = cache.get(targetId);
 
       if (!limitInfo) {
-        const result = fetchFreshLimitInfo(input);
+        const result = await rateLimit.checkRateLimitForTarget.query({
+          targetId,
+        });
 
         if (result) {
-          cache.set(input.id, result);
+          cache.set(targetId, result);
 
-          return result.then(r => r !== null && r.limited);
+          return result !== null && result.limited;
         }
 
         return false;

@@ -1,6 +1,5 @@
 import { ReactElement, useMemo } from 'react';
 import NextLink from 'next/link';
-import { endOfMonth, startOfDay, startOfMonth } from 'date-fns';
 import ReactECharts from 'echarts-for-react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { useQuery } from 'urql';
@@ -16,7 +15,7 @@ import { QueryError } from '@/components/ui/query-error';
 import { Card, Heading, MetaTitle, Stat } from '@/components/v2';
 import { graphql, useFragment } from '@/gql';
 import { OrganizationAccessScope, useOrganizationAccess } from '@/lib/access/organization';
-import { getIsStripeEnabled } from '@/lib/billing/stripe-public-key';
+import { getIsPaddleEnabled } from '@/lib/billing/paddle-public-key';
 import { formatNumber, useRouteSelector } from '@/lib/hooks';
 import { useChartStyles } from '@/utils';
 
@@ -30,6 +29,7 @@ const numberFormatter = Intl.NumberFormat('en-US');
 
 const SubscriptionPage_OrganizationFragment = graphql(`
   fragment SubscriptionPage_OrganizationFragment on Organization {
+    id
     me {
       ...CanAccessOrganization_MemberFragment
     }
@@ -84,13 +84,14 @@ const SubscriptionPageQuery = graphql(`
 function SubscriptionPageContent() {
   const router = useRouteSelector();
 
-  if (!getIsStripeEnabled()) {
+  if (!getIsPaddleEnabled()) {
     void router.push({
       pathname: '/[organizationId]',
       query: {
         organizationId: router.organizationId,
       },
     });
+
     return null;
   }
 
@@ -137,10 +138,6 @@ function SubscriptionPageContent() {
   if (!canAccess) {
     return null;
   }
-
-  const today = startOfDay(new Date());
-  const start = startOfMonth(today);
-  const end = endOfMonth(today);
 
   return (
     <OrganizationLayout
@@ -196,16 +193,15 @@ function SubscriptionPageContent() {
           </Card>
           <Card className="mt-8">
             <Heading>Current Usage</Heading>
-            <p className="text-sm text-gray-500">
-              {DateFormatter.format(start)} — {DateFormatter.format(end)}
-            </p>
-            <div className="mt-4">
-              <OrganizationUsageEstimationView organization={organization} />
-            </div>
+            <OrganizationUsageEstimationView organization={organization} />
           </Card>
           {monthlyUsagePoints.length ? (
             <Card className="mt-8">
               <Heading>Historical Usage</Heading>
+              <p className="text-sm text-gray-500">
+                Based on monthly usage data. This information can help you to understand your
+                average usage per month.
+              </p>
               <div className="mt-4">
                 <AutoSizer disableHeight>
                   {size => (

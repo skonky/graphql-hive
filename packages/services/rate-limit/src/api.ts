@@ -3,7 +3,7 @@ import { handleTRPCError } from '@hive/service-common';
 import type { FastifyRequest } from '@hive/service-common';
 import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 import { initTRPC } from '@trpc/server';
-import type { Limiter } from './limiter';
+import { buildRateLimitWindow, type Limiter } from './limiter';
 
 export interface Context {
   req: FastifyRequest;
@@ -12,20 +12,6 @@ export interface Context {
 
 const t = initTRPC.context<Context>().create();
 const procedure = t.procedure.use(handleTRPCError);
-
-export type RateLimitInput = z.infer<typeof VALIDATION>;
-
-const VALIDATION = z
-  .object({
-    id: z.string().min(1),
-    entityType: z.enum(['organization', 'target']),
-    type: z.enum(['operations-reporting']),
-    /**
-     * Token is optional, and used only when an additional blocking (WAF) process is needed.
-     */
-    token: z.string().nullish().optional(),
-  })
-  .required();
 
 export const rateLimitApiRouter = t.router({
   getRetention: procedure
@@ -39,9 +25,50 @@ export const rateLimitApiRouter = t.router({
     .query(({ ctx, input }) => {
       return ctx.limiter.getRetention(input.targetId);
     }),
-  checkRateLimit: procedure.input(VALIDATION).query(({ ctx, input }) => {
-    return ctx.limiter.checkLimit(input);
-  }),
+  calculateWindow: procedure
+    .input(
+      z
+        .object({
+          cycleDay: z.number().min(1),
+        })
+        .required(),
+    )
+    .query(({ input }) => {
+      const window = buildRateLimitWindow(input.cycleDay);
+
+      return {
+        start: window.start.getTime(),
+        end: window.end.getTime(),
+      };
+    }),
+  checkRateLimitForOrganization: procedure
+    .input(
+      z
+        .object({
+          organizationId: z.string().min(1),
+        })
+        .required(),
+    )
+    .query(({ ctx, input }) => {
+      return ctx.limiter.checkLimit(input.organizationId);
+    }),
+  checkRateLimitForTarget: procedure
+    .input(
+      z
+        .object({
+          targetId: z.string().min(1),
+        })
+        .required(),
+    )
+    .query(async ({ ctx, input }) => {
+      const organizationId = ctx.limiter.targetIdToOrgId(input.targetId);
+
+      if (!organizationId) {
+        throw new Error(`No organization found for targetId: ${input.targetId}`);
+      }
+
+      return ctx.limiter.checkLimit(organizationId);
+    }),
 });
 
 export type RateLimitApi = typeof rateLimitApiRouter;

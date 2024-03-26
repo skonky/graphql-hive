@@ -8,15 +8,7 @@ const config: CodegenConfig = {
     // API
     './packages/services/api/src/modules': {
       preset: 'graphql-modules',
-      plugins: [
-        {
-          add: {
-            content: "import type { StripeTypes } from '@hive/stripe-billing';",
-          },
-        },
-        'typescript',
-        'typescript-resolvers',
-      ],
+      plugins: ['typescript', 'typescript-resolvers'],
       presetConfig: {
         baseTypesPath: '../__generated__/types.ts',
         filename: '__generated__/types.ts',
@@ -97,9 +89,8 @@ const config: CodegenConfig = {
           AdminGeneralStats: '../shared/mappers#AdminStats as AdminGeneralStatsMapper',
           AdminOrganizationStats:
             '../shared/entities#AdminOrganizationStats as AdminOrganizationStatsMapper',
-          BillingPaymentMethod: 'StripeTypes.PaymentMethod.Card',
-          BillingDetails: 'StripeTypes.PaymentMethod.BillingDetails',
-          BillingInvoice: 'StripeTypes.Invoice | StripeTypes.UpcomingInvoice',
+          BillingInvoice:
+            '../modules/billing/providers/base-provider#BillingInvoice as BillingInvoiceMapper',
           OrganizationGetStarted:
             '../shared/entities#OrganizationGetStarted as OrganizationGetStartedMapper',
           SchemaExplorer: '../shared/mappers#SchemaExplorerMapper',
