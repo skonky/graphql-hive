@@ -25,6 +25,7 @@
     "@graphql-hive/client": "workspace:*",
     "@graphql-yoga/plugin-persisted-operations": "3.2.0",
     "@graphql-yoga/plugin-response-cache": "3.4.0",
+    "@graphql-yoga/redis-event-target": "3.0.0",
     "@hive/api": "workspace:*",
     "@hive/cdn-script": "workspace:*",
     "@hive/service-common": "workspace:*",
