@@ -614,8 +614,8 @@ importers:
         specifier: 14.1.0
         version: 14.1.0
       '@octokit/core':
-        specifier: 5.2.0
-        version: 5.2.0
+        specifier: 6.1.2
+        version: 6.1.2
       '@octokit/request-error':
         specifier: 6.1.1
         version: 6.1.1
@@ -4988,6 +4988,10 @@ packages:
     resolution: {integrity: sha512-tY/msAuJo6ARbK6SPIxZrPBms3xPbfwBrulZe0Wtr/DIY9lje2HeV1uoebShn6mx7SjCHif6EjMvoREj+gZ+SA==}
     engines: {node: '>= 18'}
 
+  '@octokit/auth-token@5.1.1':
+    resolution: {integrity: sha512-rh3G3wDO8J9wSjfI436JUKzHIxq8NaiL0tVeB2aXmG6p/9859aUOAjA9pmSPNGGZxfwmaJ9ozOJImuNVJdpvbA==}
+    engines: {node: '>= 18'}
+
   '@octokit/auth-unauthenticated@5.0.1':
     resolution: {integrity: sha512-oxeWzmBFxWd+XolxKTc4zr+h3mt+yofn4r7OfoIkR/Cj/o70eEGmPsFbueyJE2iBAGpjgTnEOKM3pnuEGVmiqg==}
     engines: {node: '>= 18'}
@@ -4997,6 +5001,14 @@ packages:
 
   '@octokit/core@5.2.0':
     resolution: {integrity: sha512-1LFfa/qnMQvEOAdzlQymH0ulepxbxnCYAKJZfMci/5XJyIHWgEYnDmgnKakbTh7CH2tFQ5O60oYDvns4i9RAIg==}
+    engines: {node: '>= 18'}
+
+  '@octokit/core@6.1.2':
+    resolution: {integrity: sha512-hEb7Ma4cGJGEUNOAVmyfdB/3WirWMg5hDuNFVejGEDFqupeOysLc2sG6HJxY2etBp5YQu5Wtxwi020jS9xlUwg==}
+    engines: {node: '>= 18'}
+
+  '@octokit/endpoint@10.1.1':
+    resolution: {integrity: sha512-JYjh5rMOwXMJyUpj028cu0Gbp7qe/ihxfJMLc8VZBMMqSwLgOxDI1911gV4Enl1QSavAQNJcwmwBF9M0VvLh6Q==}
     engines: {node: '>= 18'}
 
   '@octokit/endpoint@6.0.12':
@@ -5011,6 +5023,10 @@ packages:
 
   '@octokit/graphql@7.1.0':
     resolution: {integrity: sha512-r+oZUH7aMFui1ypZnAvZmn0KSqAUgE1/tUXIWaqUCa1758ts/Jio84GZuzsvUkme98kv0WFY8//n0J1Z+vsIsQ==}
+    engines: {node: '>= 18'}
+
+  '@octokit/graphql@8.1.1':
+    resolution: {integrity: sha512-ukiRmuHTi6ebQx/HFRCXKbDlOh/7xEV6QUXaE7MJEKGNAncGI/STSbOkl12qVXZrfZdpXctx5O9X1AIaebiDBg==}
     engines: {node: '>= 18'}
 
   '@octokit/oauth-app@6.0.0':
@@ -5075,6 +5091,10 @@ packages:
 
   '@octokit/request@8.3.1':
     resolution: {integrity: sha512-fin4cl5eHN5Ybmb/gtn7YZ+ycyUlcyqqkg5lfxeSChqj7sUt6TNaJPehREi+0PABKLREYL8pfaUhH3TicEWNoA==}
+    engines: {node: '>= 18'}
+
+  '@octokit/request@9.1.1':
+    resolution: {integrity: sha512-pyAguc0p+f+GbQho0uNetNQMmLG1e80WjkIaqqgUkihqUp0boRU6nKItXO4VWnr+nbZiLGEyy4TeKRwqaLvYgw==}
     engines: {node: '>= 18'}
 
   '@octokit/rest@18.12.0':
@@ -8368,6 +8388,9 @@ packages:
 
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
+
+  before-after-hook@3.0.2:
+    resolution: {integrity: sha512-Nik3Sc0ncrMK4UUdXQmAnRtzmNQTAAXmXIopizwZ1W1t8QmfJj+zL4OA2I7XPTPW5z5TDqv4hRo/JzouDJnX3A==}
 
   better-opn@3.0.2:
     resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}
@@ -16552,6 +16575,9 @@ packages:
   universal-user-agent@6.0.0:
     resolution: {integrity: sha512-isyNax3wXoKaulPDZWHQqbmIx1k2tb9fb3GGDBRxCscfYV2Ch7WxPArBsFEG8s/safwXTT7H4QGhaIkTp9447w==}
 
+  universal-user-agent@7.0.2:
+    resolution: {integrity: sha512-0JCqzSKnStlRRQfCdowvqy3cy0Dvtlb8xecj/H8JFZuCze4rwjPZQOgvFvn0Ws/usCHQFGpyr+pB9adaGwXn4Q==}
+
   universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
@@ -21658,7 +21684,7 @@ snapshots:
     dependencies:
       '@octokit/auth-oauth-device': 6.0.1
       '@octokit/auth-oauth-user': 4.0.1
-      '@octokit/request': 8.1.6
+      '@octokit/request': 8.3.1
       '@octokit/types': 12.4.0
       '@types/btoa-lite': 1.0.0
       btoa-lite: 1.0.0
@@ -21667,7 +21693,7 @@ snapshots:
   '@octokit/auth-oauth-device@6.0.1':
     dependencies:
       '@octokit/oauth-methods': 4.0.1
-      '@octokit/request': 8.1.6
+      '@octokit/request': 8.3.1
       '@octokit/types': 12.4.0
       universal-user-agent: 6.0.0
 
@@ -21675,7 +21701,7 @@ snapshots:
     dependencies:
       '@octokit/auth-oauth-device': 6.0.1
       '@octokit/oauth-methods': 4.0.1
-      '@octokit/request': 8.1.6
+      '@octokit/request': 8.3.1
       '@octokit/types': 12.4.0
       btoa-lite: 1.0.0
       universal-user-agent: 6.0.0
@@ -21685,6 +21711,8 @@ snapshots:
       '@octokit/types': 6.41.0
 
   '@octokit/auth-token@4.0.0': {}
+
+  '@octokit/auth-token@5.1.1': {}
 
   '@octokit/auth-unauthenticated@5.0.1':
     dependencies:
@@ -21713,6 +21741,21 @@ snapshots:
       before-after-hook: 2.2.3
       universal-user-agent: 6.0.0
 
+  '@octokit/core@6.1.2':
+    dependencies:
+      '@octokit/auth-token': 5.1.1
+      '@octokit/graphql': 8.1.1
+      '@octokit/request': 9.1.1
+      '@octokit/request-error': 6.1.1
+      '@octokit/types': 13.1.0
+      before-after-hook: 3.0.2
+      universal-user-agent: 7.0.2
+
+  '@octokit/endpoint@10.1.1':
+    dependencies:
+      '@octokit/types': 13.1.0
+      universal-user-agent: 7.0.2
+
   '@octokit/endpoint@6.0.12':
     dependencies:
       '@octokit/types': 6.41.0
@@ -21735,8 +21778,14 @@ snapshots:
   '@octokit/graphql@7.1.0':
     dependencies:
       '@octokit/request': 8.3.1
-      '@octokit/types': 13.0.0
+      '@octokit/types': 13.1.0
       universal-user-agent: 6.0.0
+
+  '@octokit/graphql@8.1.1':
+    dependencies:
+      '@octokit/request': 9.1.1
+      '@octokit/types': 13.1.0
+      universal-user-agent: 7.0.2
 
   '@octokit/oauth-app@6.0.0':
     dependencies:
@@ -21754,7 +21803,7 @@ snapshots:
   '@octokit/oauth-methods@4.0.1':
     dependencies:
       '@octokit/oauth-authorization-url': 6.0.2
-      '@octokit/request': 8.1.6
+      '@octokit/request': 8.3.1
       '@octokit/request-error': 5.1.0
       '@octokit/types': 12.4.0
       btoa-lite: 1.0.0
@@ -21823,8 +21872,15 @@ snapshots:
     dependencies:
       '@octokit/endpoint': 9.0.4
       '@octokit/request-error': 5.1.0
-      '@octokit/types': 13.0.0
+      '@octokit/types': 13.1.0
       universal-user-agent: 6.0.0
+
+  '@octokit/request@9.1.1':
+    dependencies:
+      '@octokit/endpoint': 10.1.1
+      '@octokit/request-error': 6.1.1
+      '@octokit/types': 13.1.0
+      universal-user-agent: 7.0.2
 
   '@octokit/rest@18.12.0(encoding@0.1.13)':
     dependencies:
@@ -26464,6 +26520,8 @@ snapshots:
   bcryptjs@2.4.3: {}
 
   before-after-hook@2.2.3: {}
+
+  before-after-hook@3.0.2: {}
 
   better-opn@3.0.2:
     dependencies:
@@ -36835,6 +36893,8 @@ snapshots:
       jsonwebtoken: 9.0.0
 
   universal-user-agent@6.0.0: {}
+
+  universal-user-agent@7.0.2: {}
 
   universalify@0.1.2: {}
 
