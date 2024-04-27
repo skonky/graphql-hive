@@ -1,5 +1,6 @@
 import React, { ReactElement, useCallback, useState } from 'react';
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import clsx from 'clsx';
 import { formatISO } from 'date-fns';
 import { useFormik } from 'formik';
@@ -22,7 +23,6 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Subtitle, Title } from '@/components/ui/page';
 import { QueryError } from '@/components/ui/query-error';
-import { NavState, SettingLayout } from '@/components/ui/settings-nav';
 import {
   DocsLink,
   Input,
@@ -43,6 +43,7 @@ import { ProjectType } from '@/gql/graphql';
 import { canAccessTarget, TargetAccessScope } from '@/lib/access/target';
 import { subDays } from '@/lib/date-time';
 import { useRouteSelector, useToggle } from '@/lib/hooks';
+import { cn } from '@/lib/utils';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const TargetSettings_TargetValidationSettingsFragment = graphql(`
@@ -989,6 +990,145 @@ const TargetSettingsPageQuery = graphql(`
   }
 `);
 
+const subPages = [
+  {
+    key: 'general',
+    title: 'General',
+  },
+  {
+    key: 'tokens',
+    title: 'Tokens',
+  },
+  {
+    key: 'schema-composition',
+    title: 'Schema Composition',
+  },
+] as const;
+
+type SubPage = (typeof subPages)[number]['key'];
+
+function PageContent(props: {
+  currentOrganization: any;
+  query: any;
+  currentTarget: any;
+  organizationForSettings: any;
+  canAccessTokens: boolean;
+  canDelete: boolean;
+  currentProject: any;
+  targetForSettings: any;
+}) {
+  const router = useRouter();
+  const pageFromUrl =
+    typeof router.query.page === 'string' && subPages.some(p => p.key === router.query.page)
+      ? (router.query.page as SubPage)
+      : typeof window === 'undefined'
+        ? null
+        : // we do it because sometimes useRouter().query.page is undefined when adding a role...
+          (new URL(window.location.href).searchParams.get('page') as SubPage | null) ?? null;
+
+  const [page, setPage] = useState<SubPage>(pageFromUrl ?? 'general');
+  const changePage = useCallback(
+    (newPage: SubPage) => {
+      if (page === newPage) {
+        return;
+      }
+
+      if (newPage === 'general') {
+        setPage('general');
+        void router.push(
+          '/[organizationId]/[projectId]/[targetId]/settings',
+          `/${router.query.organizationId}/${router.query.projectId}/${router.query.targetId}/settings`,
+          {
+            shallow: true,
+          },
+        );
+        return;
+      }
+
+      setPage(newPage);
+      void router.push(
+        '/[organizationId]/[projectId]/[targetId]/settings',
+        `/${router.query.organizationId}/${router.query.projectId}/${router.query.targetId}/settings?page=${newPage}`,
+        {
+          shallow: true,
+        },
+      );
+    },
+    [page, setPage, router],
+  );
+
+  return (
+    <div className="flex flex-col gap-y-4">
+      <div className="flex flex-row gap-x-6 py-6">
+        <nav className="flex w-48 flex-col space-x-0 space-y-1">
+          {subPages.map(subPage => {
+            return (
+              <Button
+                key={subPage.key}
+                variant="ghost"
+                onClick={() => changePage(subPage.key)}
+                className={cn(
+                  page === subPage.key
+                    ? 'bg-muted hover:bg-muted'
+                    : 'hover:bg-transparent hover:underline',
+                  'justify-start',
+                )}
+              >
+                {subPage.title}
+              </Button>
+            );
+          })}
+        </nav>
+        <div className="grow">
+          {props.currentOrganization &&
+          props.currentProject &&
+          props.currentTarget &&
+          props.organizationForSettings ? (
+            <>
+              {page === 'general' ? (
+                <div className="flex flex-col gap-4">
+                  <TargetName
+                    targetName={props.currentTarget.name}
+                    targetId={props.currentTarget.cleanId}
+                    projectId={props.currentProject.cleanId}
+                    organizationId={props.currentOrganization.cleanId}
+                  />
+                  <GraphQLEndpointUrl
+                    targetId={props.currentTarget.cleanId}
+                    projectId={props.currentProject.cleanId}
+                    organizationId={props.currentOrganization.cleanId}
+                    graphqlEndpointUrl={props.currentTarget.graphqlEndpointUrl ?? null}
+                  />
+                  {props.canDelete && (
+                    <TargetDelete
+                      targetId={props.currentTarget.cleanId}
+                      projectId={props.currentProject.cleanId}
+                      organizationId={props.currentOrganization.cleanId}
+                    />
+                  )}
+                </div>
+              ) : null}
+              {page === 'tokens' && props.canAccessTokens ? (
+                <div className="flex flex-col gap-4">
+                  <RegistryAccessTokens me={props.organizationForSettings.me} />
+                  <CDNAccessTokens me={props.organizationForSettings.me} />
+                </div>
+              ) : null}
+              {page === 'schema-composition' ? (
+                <div className="flex flex-col gap-4">
+                  {props.currentProject.type === ProjectType.Federation && <SchemaContracts />}
+                  <ConditionalBreakingChanges />
+                  <ExtendBaseSchema baseSchema={props.targetForSettings?.baseSchema ?? ''} />
+                </div>
+              ) : null}
+            </>
+          ) : null}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function TargetSettingsContent() {
   const router = useRouteSelector();
   const [query] = useQuery({
@@ -1022,8 +1162,6 @@ function TargetSettingsContent() {
     return <QueryError error={query.error} />;
   }
 
-  const [selectedTab, setSelectedTab] = useState<NavState>('General');
-
   return (
     <TargetLayout
       page={Page.Settings}
@@ -1037,46 +1175,16 @@ function TargetSettingsContent() {
         <Title>Settings</Title>
         <Subtitle>Manage your target settings.</Subtitle>
       </div>
-      {currentOrganization && currentProject && currentTarget && organizationForSettings ? (
-        <SettingLayout selectedTab={selectedTab} setSelectedTab={setSelectedTab}>
-          {selectedTab === 'General' && (
-            <div className="mb-5 flex flex-col gap-y-4">
-              <TargetName
-                targetName={currentTarget.name}
-                organizationId={router.organizationId}
-                projectId={router.projectId}
-                targetId={router.targetId}
-              />
-              <GraphQLEndpointUrl
-                targetId={currentTarget.cleanId}
-                projectId={currentProject.cleanId}
-                organizationId={currentOrganization.cleanId}
-                graphqlEndpointUrl={currentTarget.graphqlEndpointUrl ?? null}
-              />
-              {canDelete && (
-                <TargetDelete
-                  targetId={currentTarget.cleanId}
-                  projectId={currentProject.cleanId}
-                  organizationId={currentOrganization.cleanId}
-                />
-              )}
-              {currentProject.type === ProjectType.Federation && <SchemaContracts />}
-            </div>
-          )}
-          {selectedTab === 'Token' && canAccessTokens && (
-            <div className="mb-5 flex flex-col gap-y-4">
-              <RegistryAccessTokens me={organizationForSettings.me} />
-              <CDNAccessTokens me={organizationForSettings.me} />
-            </div>
-          )}
-          {selectedTab === 'Schema' && (
-            <div className="mb-5 flex flex-col gap-y-4">
-              <ConditionalBreakingChanges />
-              <ExtendBaseSchema baseSchema={targetForSettings?.baseSchema ?? ''} />
-            </div>
-          )}
-        </SettingLayout>
-      ) : null}
+      <PageContent
+        currentProject={currentProject}
+        canAccessTokens={canAccessTokens}
+        canDelete={canDelete}
+        currentOrganization={currentOrganization}
+        currentTarget={currentTarget}
+        organizationForSettings={organizationForSettings}
+        query={query}
+        targetForSettings={targetForSettings}
+      />
     </TargetLayout>
   );
 }
